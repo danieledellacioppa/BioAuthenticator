@@ -12,6 +12,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.content.ContextCompat
@@ -20,13 +22,11 @@ import com.forteur.bioauthenticator.ui.theme.BioAuthenticatorTheme
 import java.util.concurrent.Executor
 
 class MainActivity : FragmentActivity() {
-    var biometricManagerStatus : String = ""
-
+    lateinit var viewModel: ViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        var myBiometricManager = MyBiometricManager(this)
-        myBiometricManager.checkBiometricSupport()
-        myBiometricManager.authenticate()
+        viewModel = ViewModel(this)
+        viewModel.getFingerPrint()
 
         setContent {
             BioAuthenticatorTheme {
@@ -35,7 +35,7 @@ class MainActivity : FragmentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    BiometryStatus(biometricManagerStatus)
+                    BiometryStatus(viewModel)
                 }
             }
         }
@@ -43,6 +43,8 @@ class MainActivity : FragmentActivity() {
 }
 
 @Composable
-fun BiometryStatus(biometricManagerStatus: String) {
-    Text(text = biometricManagerStatus)
+fun BiometryStatus(viewModel: ViewModel) {
+    // Osserva i cambiamenti di LiveData in Compose
+    val status = viewModel.biometricManagerStatus.observeAsState()
+    Text(text = "Biometric Status: ${status.value}")
 }

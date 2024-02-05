@@ -8,34 +8,39 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import java.util.concurrent.Executor
 
-class MyBiometricManager(private val context: Context) {
+class MyBiometricManager(private val context: Context, viewModel: ViewModel) {
     private val biometricManager = BiometricManager.from(context)
     private lateinit var biometricPrompt: BiometricPrompt
     private lateinit var promptInfo: BiometricPrompt.PromptInfo
     private val executor: Executor = ContextCompat.getMainExecutor(context)
 
     init {
-        setupBiometricPrompt()
+        setupBiometricPrompt(viewModel)
     }
 
-    private fun setupBiometricPrompt() {
+    private fun setupBiometricPrompt(viewModel: ViewModel) {
         val callback = object : BiometricPrompt.AuthenticationCallback() {
             override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
                 super.onAuthenticationError(errorCode, errString)
                 // Gestisci l'errore di autenticazione
                 Log.e("MY_APP_TAG", "Errore di autenticazione: $errString")
+                viewModel.updateBiometricStatus("Errore di autenticazione: $errString")
             }
 
             override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                 super.onAuthenticationSucceeded(result)
                 // Gestisci il successo di autenticazione
                 Log.d("MY_APP_TAG", "Autenticazione riuscita")
+//                viewModel.updateBiometricStatus("Autenticazione riuscita")
+                // aggiorna il valore di biometricManagerStatus con il numero di millisecondi trascorsi dal 1 gennaio 1970
+                viewModel.updateBiometricStatus(System.currentTimeMillis().toString())
             }
 
             override fun onAuthenticationFailed() {
                 super.onAuthenticationFailed()
                 // Gestisci il fallimento di autenticazione
                 Log.d("MY_APP_TAG", "Autenticazione fallita")
+                viewModel.updateBiometricStatus("Autenticazione fallita")
             }
         }
 

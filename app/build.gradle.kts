@@ -67,4 +67,5 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     implementation ("androidx.biometric:biometric-ktx:1.2.0-alpha05")
+    implementation ("androidx.compose.runtime:runtime-livedata:1.6.0")
 }
